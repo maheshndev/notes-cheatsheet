@@ -2,59 +2,63 @@
 ### To Save Code, Notes, Links, And More
 
 - [event-list-custom-html-block-workspace-frappe.md](event-list-custom-html-block-workspace-frappe.md)
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Markdown Files</title>
+    <title>GitHub .md Files List</title>
+</head>
+<body>
+
+    <h1>List of Markdown Files in GitHub Repository</h1>
+    <div>
+        <label for="user">GitHub User:</label>
+        <input type="text" id="user" placeholder="Enter GitHub User" value="octocat">
+    </div>
+    <div>
+        <label for="repo">Repository Name:</label>
+        <input type="text" id="repo" placeholder="Enter Repository Name" value="Hello-World">
+    </div>
+    <div>
+        <label for="branch">Branch:</label>
+        <input type="text" id="branch" placeholder="Enter Branch Name" value="main">
+    </div>
+
+    <button id="load-files">Load Markdown Files</button>
+
+    <ul id="file-list">
+        <!-- List of markdown files will appear here -->
+    </ul>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const user = urlParams.get('user');
-            const repo = urlParams.get('repository');
-            const branch = urlParams.get('branch') || 'main'; // Default to 'main' if branch is not provided
+        document.getElementById('load-files').addEventListener('click', function() {
+            const user = document.getElementById('user').value;
+            const repo = document.getElementById('repo').value;
+            const branch = document.getElementById('branch').value;
 
-            if (!user || !repo) {
-                alert("User and repository parameters are required!");
-                return;
-            }
-
-            const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents?ref=${branch}`;
-            
-            fetch(apiUrl)
+            fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`)
                 .then(response => response.json())
                 .then(data => {
-                    const markdownFiles = data.filter(item => item.name.endsWith('.md'));
-                    displayFiles(markdownFiles);
+                    const files = data.tree.filter(item => item.path.endsWith('.md'));
+                    const fileListElement = document.getElementById('file-list');
+                    fileListElement.innerHTML = ''; // Clear previous results
+
+                    if (files.length > 0) {
+                        files.forEach(file => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = file.path;
+                            fileListElement.appendChild(listItem);
+                        });
+                    } else {
+                        fileListElement.innerHTML = '<li>No markdown files found.</li>';
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                 });
-
-            function displayFiles(files) {
-                const filesList = document.getElementById('files-list');
-                filesList.innerHTML = '';
-
-                if (files.length === 0) {
-                    filesList.innerHTML = '<li>No markdown files found.</li>';
-                    return;
-                }
-
-                files.forEach(file => {
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<a href="${file.html_url}" target="_blank">${file.name}</a>`;
-                    filesList.appendChild(listItem);
-                });
-            }
         });
     </script>
-</head>
-<body>
-    <h1>Markdown Files in GitHub Repository</h1>
-    <ul id="files-list">
-        <!-- Markdown files will be listed here -->
-    </ul>
+
 </body>
 </html>
