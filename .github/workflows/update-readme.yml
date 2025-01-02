@@ -1,42 +1,48 @@
-name: Update README with Markdown Files
+name: Update README.md with .md files
 
 on:
   push:
     branches:
-      - main  # Trigger this on push to main (or your default branch)
+      - main  # or your default branch name
+  pull_request:
+    branches:
+      - main  # or your default branch name
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      
-      - name: Get list of .md files in the current branch
-        run: |
-          # Find all .md files in the repository, excluding README.md itself
-          md_files=$(find . -name "*.md" -not -path "./README.md")
-          echo "$md_files" > markdown_files.txt
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Get list of .md files
+      run: |
+        # Find all .md files and save them to a variable
+        md_files=$(find . -name "*.md" -not -path "./README.md" -not -path "*/node_modules/*" -not -path "*/.git/*" -print)
         
-      - name: Generate the list of .md files as markdown links
-        run: |
-          # Generate markdown-formatted links for each .md file
-          links=""
-          while IFS= read -r file; do
-            filename=$(basename "$file")
-            links+="* [$filename]($file)\n"
-          done < markdown_files.txt
-          echo -e "$links" > links.md
+        # Format the list with markdown hyperlinks
+        md_links=""
+        for file in $md_files; do
+          file_name=$(basename "$file")
+          md_links="$md_links\n- [$file_name]($file)"
+        done
+        
+        # Create a markdown list in a file to be inserted into README
+        echo -e "$md_links" > md_files_list.md
 
-      - name: Update README.md with the list of markdown files
-        run: |
-          # Read the current README.md and append the list of .md files to it
-          echo -e "\n## List of Markdown Files\n$(cat links.md)" >> README.md
+    - name: Update README.md
+      run: |
+        # Add the list of .md files to the README.md
+        list_of_files=$(cat md_files_list.md)
 
-      - name: Commit changes to README.md
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add README.md
-          git commit -m "Update README with list of markdown files"
-          git push
+        # Add or update the section in the README.md file
+        sed -i "/## Markdown Files List/i ## Markdown Files List\n$list_of_files\n" README.md
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@users.noreply.github.com"
+        git add README.md
+        git commit -m "Update README.md with .md files list"
+        git push
