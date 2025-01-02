@@ -36,8 +36,8 @@ jobs:
         # Add the list of .md files to the README.md
         list_of_files=$(cat md_files_list.md)
 
-        # Add or update the section in the README.md file
-        sed -i "/## Markdown Files List/i ## Markdown Files List\n$list_of_files\n" README.md
+        # Append the list of .md files at the specified section in README.md
+        echo -e "\n## Markdown Files List\n$list_of_files\n" >> README.md
 
     - name: Commit and push changes
       run: |
