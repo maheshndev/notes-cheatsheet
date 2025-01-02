@@ -3,14 +3,7 @@
 
 - [event-list-custom-html-block-workspace-frappe.md](event-list-custom-html-block-workspace-frappe.md)
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate README with .md files</title>
-</head>
-<body>
+
     <h1>Generate README for GitHub Repository</h1>
 
     <div>
@@ -87,5 +80,4 @@
             }
         }
     </script>
-</body>
-</html>
+
