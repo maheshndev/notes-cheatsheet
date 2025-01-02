@@ -1,39 +1,37 @@
-name: Update README with .md Files
+name: Update README with MD Files List
 
 on:
   push:
     branches:
-      - '**' # Trigger on any branch push
-    paths:
-      - '**/*.md' # Trigger only when .md files are modified or added
+      - main  # Trigger on pushes to the main branch (adjust if using a different default branch)
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout the repository
+        uses: actions/checkout@v2
 
-    - name: List all .md files and update README
-      run: |
-        # Find all .md files in the current branch
-        MD_FILES=$(find . -name "*.md" | sort)
-        
-        # Generate the Markdown content
-        echo "# List of .md Files" > README.md
-        echo "" >> README.md
-        for file in $MD_FILES; do
-          echo "- [$file]($file)" >> README.md
-        done
+      - name: List all .md files in the current branch
+        run: |
+          echo "Listing .md files in the repository..."
+          md_files=$(find . -type f -name "*.md")
+          echo "## Markdown Files" > markdown_files.txt
+          echo "" >> markdown_files.txt
+          for file in $md_files; do
+            echo "- $file" >> markdown_files.txt
+          done
+          
+      - name: Update README.md with list of .md files
+        run: |
+          echo "Updating README.md..."
+          cat markdown_files.txt >> README.md
 
-    - name: Commit and Push Changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: |
-        git config --global user.name "maheshndev"
-        git config --global user.email "maheshnarsale@outlook.com"
-        
-        git add README.md
-        git commit -m "Update README.md with list of .md files"
-        git push origin HEAD
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "maheshndev"
+          git config --global user.email "maheshnarsale@outlook.com"
+          git add README.md
+          git commit -m "Update README with latest .md files"
+          git push origin main  # Adjust branch name if needed
