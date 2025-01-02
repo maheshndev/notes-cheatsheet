@@ -3,14 +3,17 @@ name: Update README with .md file list
 on:
   push:
     branches:
-      - main  # Change this to your default branch if it's not 'main'
+      - main
   pull_request:
     branches:
-      - main  # Trigger on PRs as well if necessary
+      - main
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # Give write permissions to the contents of the repository
 
     steps:
     - name: Checkout repository
