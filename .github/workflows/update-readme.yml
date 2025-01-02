@@ -3,39 +3,40 @@ name: Update README with Markdown Files
 on:
   push:
     branches:
-      - main  # Adjust branch name as necessary
-    paths:
-      - '**/*.md'  # Trigger the action when any .md file is added or modified
+      - main  # Trigger this on push to main (or your default branch)
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Set up Git user
+      
+      - name: Get list of .md files in the current branch
         run: |
-          git config --global user.name "maheshndev"
-          git config --global user.email "maheshnarsale@outlook.com"
-
-      - name: List all markdown files and update README
+          # Find all .md files in the repository, excluding README.md itself
+          md_files=$(find . -name "*.md" -not -path "./README.md")
+          echo "$md_files" > markdown_files.txt
+        
+      - name: Generate the list of .md files as markdown links
         run: |
-          # Get all .md files in the current branch
-          md_files=$(find . -type f -name "*.md" | grep -v "README.md")
+          # Generate markdown-formatted links for each .md file
+          links=""
+          while IFS= read -r file; do
+            filename=$(basename "$file")
+            links+="* [$filename]($file)\n"
+          done < markdown_files.txt
+          echo -e "$links" > links.md
 
-          # Check if there are any markdown files
-          if [ -n "$md_files" ]; then
-            # Add markdown files to README.md
-            echo -e "\n### List of Markdown Files in this repository:\n" >> README.md
-            echo "$md_files" >> README.md
-          fi
-
-      - name: Commit and push changes to README
+      - name: Update README.md with the list of markdown files
         run: |
+          # Read the current README.md and append the list of .md files to it
+          echo -e "\n## List of Markdown Files\n$(cat links.md)" >> README.md
+
+      - name: Commit changes to README.md
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
           git add README.md
-          git commit -m "Update README with new markdown files"
+          git commit -m "Update README with list of markdown files"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
