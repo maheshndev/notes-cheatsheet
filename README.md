@@ -2,14 +2,9 @@
 ### To Save Code, Notes, Links, And More
 
 - [event-list-custom-html-block-workspace-frappe.md](event-list-custom-html-block-workspace-frappe.md)
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub .md Files List</title>
-</head>
-<body>
+
+
+
 
     <h1>List of Markdown Files in GitHub Repository</h1>
     <div>
@@ -60,5 +55,5 @@
         });
     </script>
 
-</body>
-</html>
+
+
