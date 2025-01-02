@@ -5,6 +5,7 @@
     <h3>Today's Birthdays</h3>
     <div id="employees"></div>
 </div>
+
 ```
 ### JavaScript Code 
 ```
@@ -12,7 +13,7 @@ frappe.call({
     method: "frappe.client.get_list",
     args: {
         doctype: "Employee",
-        fields: ["employee_name", "date_of_birth"]
+        fields: ["employee_name", "date_of_birth", "name"], // Include 'name' to use as a link
     },
     callback(r) {
         if (r.message) {
@@ -28,8 +29,10 @@ frappe.call({
                 let i=0;
                 employeeList.forEach(employee => {
                     i+=1;
+                    const employeeLink = `/app/employee/${employee.name}`; // Link to the Employee doctype
                     employeeHtml += `<div class="employee">
-                                        <span>${i}. </span><span>${employee.employee_name}</span>
+                                        <span>${i}. </span>
+                                        <a href="${employeeLink}" target="_blank">${employee.employee_name}</a> <!-- Link to Employee -->
                                      </div>`;
                 });
                 root_element.querySelector('#employees').innerHTML = employeeHtml;
