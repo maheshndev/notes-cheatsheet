@@ -12,6 +12,9 @@ jobs:
   update-readme:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # Give write permissions to the contents of the repository
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -45,11 +48,9 @@ jobs:
         echo -e "$updated_content" > README.md
 
     - name: Commit and push changes
-      env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Use the PAT stored in GitHub Secrets
       run: |
-        git config user.name "${GITHUB_ACTOR}"  # Uses the GitHub user who triggered the action
-        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"  # Uses the GitHub user email
+        git config user.name "maheshndev"  # Set user name
+        git config user.email "maheshnarsale@outlook.com"  # Set user email
         git add README.md
         git commit -m "Update README with new .md file list"
-        git push https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:${GITHUB_REF##*/}
+        git push
