@@ -26,7 +26,7 @@ jobs:
         # Update the README file (example: append the list)
         echo "### Latest .md Files" >> README.md
         echo "$md_files" >> README.md
-        
+
     - name: Commit changes
       run: |
         git add README.md
