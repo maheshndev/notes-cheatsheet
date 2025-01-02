@@ -1,37 +1,41 @@
-name: Update README with MD Files List
+name: Update README with .md files
 
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch (adjust if using a different default branch)
+      - main
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: List all .md files in the current branch
-        run: |
-          echo "Listing .md files in the repository..."
-          md_files=$(find . -type f -name "*.md")
-          echo "## Markdown Files" > markdown_files.txt
-          echo "" >> markdown_files.txt
-          for file in $md_files; do
-            echo "- $file" >> markdown_files.txt
-          done
-          
-      - name: Update README.md with list of .md files
-        run: |
-          echo "Updating README.md..."
-          cat markdown_files.txt >> README.md
+    - name: Set up Git
+      run: |
+        git config --global user.name "maheshndev"
+        git config --global user.email "maheshnarsale@outlook.com"
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name "maheshndev"
-          git config --global user.email "maheshnarsale@outlook.com"
-          git add README.md
-          git commit -m "Update README with latest .md files"
-          git push origin main  # Adjust branch name if needed
+    - name: Find all .md files and update README
+      run: |
+        # Get a list of all .md files in the current branch
+        md_files=$(find . -type f -name "*.md" | tr '\n' ' ')
+        echo "Found .md files: $md_files"
+        # Update the README file (example: append the list)
+        echo "### Latest .md Files" >> README.md
+        echo "$md_files" >> README.md
+        
+    - name: Commit changes
+      run: |
+        git add README.md
+        git commit -m "Update README with latest .md files"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    - name: Push changes
+      run: |
+        git push https://github.com/${{ github.repository }}.git HEAD:main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
