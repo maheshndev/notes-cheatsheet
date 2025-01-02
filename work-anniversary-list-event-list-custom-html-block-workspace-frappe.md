@@ -14,7 +14,7 @@ frappe.call({
     method: "frappe.client.get_list",
     args: {
         doctype: "Employee",
-        fields: ["employee_name", "date_of_joining"]
+        fields: ["name", "employee_name", "date_of_joining"]
     },
     callback(r) {
         if (r.message) {
@@ -30,8 +30,10 @@ frappe.call({
                 let i = 0;
                 employeeList.forEach(employee => {
                     i += 1;
+                    const employeeLink = `/app/employee/${employee.name}`; // Link to the Employee doctype
                     employeeHtml += `<div class="employee">
-                                        <span>${i}. </span><span>${employee.employee_name}</span>
+                                        <span>${i}. </span>
+                                        <a href="${employeeLink}" target="_blank">${employee.employee_name}</a> <!-- Link to Employee -->
                                      </div>`;
                 });
                 root_element.querySelector('#employees').innerHTML = employeeHtml;
@@ -41,6 +43,7 @@ frappe.call({
         }
     }
 });
+
 
 ```
 ### CSS Code 
