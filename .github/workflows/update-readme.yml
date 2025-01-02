@@ -19,6 +19,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Get repository owner username and email
+      id: get_owner_info
+      run: |
+        # Extract owner from GITHUB_REPOSITORY (format: owner/repository)
+        owner=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
+
+        # Fetch the owner details using GitHub API
+        user_info=$(curl -s https://api.github.com/users/${owner})
+        
+        # Extract username and email
+        username=$(echo "$user_info" | jq -r .login)
+        email=$(echo "$user_info" | jq -r .email)
+
+        # Set the GitHub username and email for later use
+        echo "USERNAME=${username}" >> $GITHUB_ENV
+        echo "EMAIL=${email}" >> $GITHUB_ENV
+
     - name: Get list of markdown files
       id: get_files
       run: |
@@ -49,8 +66,8 @@ jobs:
 
     - name: Commit and push changes
       run: |
-        git config user.name "maheshndev"  # Set user name
-        git config user.email "maheshnarsale@outlook.com"  # Set user email
+        git config user.name "${USERNAME}"  # Uses the repository owner's username
+        git config user.email "${EMAIL}"  # Uses the repository owner's email
         git add README.md
         git commit -m "Update README with new .md file list"
         git push
