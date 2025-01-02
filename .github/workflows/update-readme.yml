@@ -47,10 +47,13 @@ jobs:
         # Write the updated content back to README.md
         echo -e "$updated_content" > README.md
 
+    - name: Stage all files
+      run: |
+        git add README.md files.txt  # Add both README.md and files.txt to the staging area
+
     - name: Commit and push changes
       run: |
         git config user.name "${GITHUB_ACTOR}"  # Uses the GitHub user who triggered the action
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"  # Uses the GitHub user email
-        git add README.md
         git commit -m "Update README with new .md file list"
         git push
