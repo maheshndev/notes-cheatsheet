@@ -31,8 +31,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "maheshndev"
+        git config --global user.email "maheshnarsale@outlook.com"
         
         git add README.md
         git commit -m "Update README.md with list of .md files"
