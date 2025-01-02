@@ -1,41 +1,41 @@
-name: Update README with .md files
+name: Update README with Markdown Files
 
 on:
   push:
     branches:
-      - main
+      - main  # Adjust branch name as necessary
+    paths:
+      - '**/*.md'  # Trigger the action when any .md file is added or modified
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Git
-      run: |
-        git config --global user.name "maheshndev"
-        git config --global user.email "maheshnarsale@outlook.com"
+      - name: Set up Git user
+        run: |
+          git config --global user.name "maheshndev"
+          git config --global user.email "maheshnarsale@outlook.com"
 
-    - name: Find all .md files and update README
-      run: |
-        # Get a list of all .md files in the current branch
-        md_files=$(find . -type f -name "*.md" | tr '\n' ' ')
-        echo "Found .md files: $md_files"
-        # Update the README file (example: append the list)
-        echo "### Latest .md Files" >> README.md
-        echo "$md_files" >> README.md
+      - name: List all markdown files and update README
+        run: |
+          # Get all .md files in the current branch
+          md_files=$(find . -type f -name "*.md" | grep -v "README.md")
 
-    - name: Commit changes
-      run: |
-        git add README.md
-        git commit -m "Update README with latest .md files"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # Check if there are any markdown files
+          if [ -n "$md_files" ]; then
+            # Add markdown files to README.md
+            echo -e "\n### List of Markdown Files in this repository:\n" >> README.md
+            echo "$md_files" >> README.md
+          fi
 
-    - name: Push changes
-      run: |
-        git push https://github.com/${{ github.repository }}.git HEAD:main
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Commit and push changes to README
+        run: |
+          git add README.md
+          git commit -m "Update README with new markdown files"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
