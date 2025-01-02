@@ -4,80 +4,43 @@
 - [event-list-custom-html-block-workspace-frappe.md](event-list-custom-html-block-workspace-frappe.md)
 
 
-    <h1>Generate README for GitHub Repository</h1>
+   # Project Documentation
 
-    <div>
-        <label for="user">GitHub Username:</label>
-        <input type="text" id="user" placeholder="Enter your GitHub username">
-    </div>
+This file is dynamically generated and lists all markdown files in the repository.
 
-    <div>
-        <label for="repo">Repository Name:</label>
-        <input type="text" id="repo" placeholder="Enter your repository name">
-    </div>
+## Current Repository Information
+- **User**: `{{user}}`
+- **Repository**: `{{repository}}`
+- **Branch**: `{{branch}}`
 
-    <div>
-        <label for="branch">Branch Name:</label>
-        <input type="text" id="branch" placeholder="Enter branch name" value="main">
-    </div>
+## List of All Markdown Files
 
-    <button onclick="generateReadme()">Generate README</button>
+```python
+import requests
 
-    <div id="result"></div>
+# Get the repository details (user, repository, branch)
+user = "your-github-username"
+repository = "your-repository-name"
+branch = "main"  # or any other branch you want
 
-    <script>
-        async function generateReadme() {
-            const user = document.getElementById('user').value;
-            const repo = document.getElementById('repo').value;
-            const branch = document.getElementById('branch').value;
+# API URL to fetch the repository contents
+api_url = f"https://api.github.com/repos/{user}/{repository}/contents/?ref={branch}"
 
-            if (!user || !repo || !branch) {
-                alert('Please enter all the required fields!');
-                return;
-            }
+# Get all files from the repository
+response = requests.get(api_url)
+files = response.json()
 
-            // GitHub API URL to get the file tree from a specific branch
-            const apiUrl = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`;
+# Filter markdown files
+md_files = [file['name'] for file in files if file['name'].endswith('.md')]
 
-            try {
-                // Fetch data from GitHub API
-                const response = await fetch(apiUrl);
-                const data = await response.json();
+# Create the markdown content for the README file
+markdown_content = "# List of Markdown Files in the Repository\n\n"
+markdown_content += "| File Name | Link |\n"
+markdown_content += "| --- | --- |\n"
+for file in md_files:
+    file_url = f"https://github.com/{user}/{repository}/blob/{branch}/{file}"
+    markdown_content += f"| {file} | [{file}]({file_url}) |\n"
 
-                if (data.message) {
-                    alert('Error fetching repository data: ' + data.message);
-                    return;
-                }
-
-                // Filter .md files
-                const mdFiles = data.tree.filter(file => file.path.endsWith('.md'));
-
-                if (mdFiles.length === 0) {
-                    alert('No .md files found in this repository!');
-                    return;
-                }
-
-                // Create README.md content
-                let readmeContent = '# List of Markdown Files\n\n';
-                mdFiles.forEach(file => {
-                    readmeContent += `- [${file.path}](${file.url})\n`;
-                });
-
-                // Display the generated README content
-                document.getElementById('result').textContent = readmeContent;
-
-                // Optionally, you can create a downloadable README file here:
-                const blob = new Blob([readmeContent], { type: 'text/markdown' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'README.md';
-                link.textContent = 'Download README.md';
-                document.getElementById('result').appendChild(link);
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while fetching data from GitHub.');
-            }
-        }
-    </script>
-
+# Write the generated markdown content into a new README.md
+with open('README.md', 'w') as f:
+    f.write(markdown_content)
