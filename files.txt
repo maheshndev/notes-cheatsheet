@@ -1,2 +1,3 @@
 ./work-anniversary-list-event-list-custom-html-block-workspace-frappe.md
+./test.md
 ./birthday-list-event-list-custom-html-block-workspace-frappe.md
