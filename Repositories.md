@@ -1,2 +1,2 @@
 
-* Never Ending Repositori
+* Never Ending Repositories
