@@ -2,9 +2,10 @@
 ### HTML Code 
 ```
 <div id="birthday-list">
-    <h3>Today's Birthdays</h3>
+    <h3>🥳Happy Birthday🎂</h3>
     <div id="employees"></div>
 </div>
+
 
 ```
 ### JavaScript Code 
