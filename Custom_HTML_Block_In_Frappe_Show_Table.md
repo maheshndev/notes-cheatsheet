@@ -31,6 +31,8 @@
 </div>
 ```
 ![image](https://github.com/user-attachments/assets/92ae1bd0-b9a0-4c7b-b34c-86230aeb9311)
+![image](https://github.com/user-attachments/assets/a36a38d7-db72-492b-aa59-57dfa2217267)
+
 
 ## JavaScript Code
 
@@ -166,4 +168,3 @@ frappe.call({
     jobCardTable.innerHTML = tableHTML;
   }
 ```
-![image](https://github.com/user-attachments/assets/a36a38d7-db72-492b-aa59-57dfa2217267)
