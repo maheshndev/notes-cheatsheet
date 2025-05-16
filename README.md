@@ -9,4 +9,5 @@
 - [Custom_HTML_Block_In_Frappe_Show_Table.md](./Custom_HTML_Block_In_Frappe_Show_Table.md)
 - [frappe-bench.md](./frappe-bench.md)
 - [Repositories.md](./Repositories.md)
+- [custom_html_block_for_charts.md](./custom_html_block_for_charts.md)
 
