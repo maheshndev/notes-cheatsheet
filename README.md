@@ -10,4 +10,5 @@
 - [frappe-bench.md](./frappe-bench.md)
 - [Repositories.md](./Repositories.md)
 - [custom_html_block_for_charts.md](./custom_html_block_for_charts.md)
+- [custom_html_block_calendar_view_work_order.md](./custom_html_block_calendar_view_work_order.md)
 
