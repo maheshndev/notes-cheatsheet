@@ -13,7 +13,7 @@ def generate_markdown_tree(base_path='.'):
             continue
 
         relative_dir = os.path.relpath(root, base_path)
-        header = f"### {relative_dir}" if relative_dir != '.' else "### Root Directory"
+        header = f"### {relative_dir}" if relative_dir != '.' else "### Index"
         markdown_lines.append(header)
 
         for f in md_files:
