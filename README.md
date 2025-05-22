@@ -3,7 +3,8 @@
 
 #### ``` This Repository Is Open For New Contributors ```
 
-## List of Markdown Files## List of Markdown Files
+## List of Markdown Files
 
-- [Repositories.md](Repositories.md)
+### Root Directory
+- [Repositories.md](./Repositories.md)
 
