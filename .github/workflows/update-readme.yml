@@ -3,10 +3,10 @@ name: Update README with .md file list
 on:
   push:
     branches:
-      - frappe  # Change this to your default branch if it's not 'main'
+      - main  # Change this to your default branch if it's not 'main'
   pull_request:
     branches:
-      - frappe  # Trigger on PRs as well if necessary
+      - main  # Trigger on PRs as well if necessary
 
 jobs:
   update-readme:
