@@ -3,10 +3,10 @@ name: Update README with .md file tree
 on:
   push:
     branches:
-      - main
+      - nodejs
   pull_request:
     branches:
-      - main
+      - nodejs
 
 jobs:
   update-readme:
