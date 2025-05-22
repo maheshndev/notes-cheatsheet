@@ -3,10 +3,10 @@ name: Update README with .md file tree
 on:
   push:
     branches:
-      - main
+      - vuejs
   pull_request:
     branches:
-      - main
+      - vuejs
 
 jobs:
   update-readme:
