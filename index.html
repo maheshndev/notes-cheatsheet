@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BioDash Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/@material-tailwind/html@latest/styles/material-tailwind.css" rel="stylesheet" />
+    <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/ripple.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      function setTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+      }
+      function toggleTheme() {
+        const current = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      }
+      function openPage(page) {
+        document.querySelectorAll('.main-page').forEach(el => el.classList.add('hidden'));
+        document.getElementById(page).classList.remove('hidden');
+        document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('bg-blue-900', 'text-white', 'font-semibold', 'shadow-md'));
+        document.getElementById('link-' + page).classList.add('bg-blue-900', 'text-white', 'font-semibold', 'shadow-md');
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        // Set theme from localStorage or default to light
+        setTheme(localStorage.getItem('theme') || 'light');
+        openPage('dashboard');
+        // Attendance Chart
+        if (document.getElementById('attendanceChart')) {
+          new Chart(document.getElementById('attendanceChart'), {
+            type: 'line',
+            data: {
+              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+              datasets: [{
+                label: 'Present',
+                data: [112, 120, 118, 130, 128, 140, 135],
+                borderColor: '#0ea5e9',
+                backgroundColor: 'rgba(14,165,233,0.10)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: '#0ea5e9'
+              },
+              {
+                label: 'Absent',
+                data: [8, 5, 7, 4, 6, 3, 5],
+                borderColor: '#f43f5e',
+                backgroundColor: 'rgba(244,63,94,0.10)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: '#f43f5e'
+              }]
+            },
+            options: {
+              plugins: { legend: { display: true } },
+              scales: {
+                x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' } }
+              }
+            }
+          });
+        }
+        // Device Status Chart
+        if (document.getElementById('deviceStatusChart')) {
+          new Chart(document.getElementById('deviceStatusChart'), {
+            type: 'doughnut',
+            data: {
+              labels: ['Online', 'Offline', 'Maintenance'],
+              datasets: [{
+                data: [4, 1, 1],
+                backgroundColor: ['#22c55e', '#f43f5e', '#fbbf24'],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              plugins: { legend: { display: true, position: 'bottom' } }
+            }
+          });
+        }
+        // Crypto Chart
+        if (document.getElementById('cryptoChart')) {
+          new Chart(document.getElementById('cryptoChart'), {
+            type: 'bar',
+            data: {
+              labels: ['BTC', 'ETH', 'SOL', 'ADA', 'XRP'],
+              datasets: [{
+                label: 'Balance',
+                data: [0.245, 1.2, 30, 100, 500],
+                backgroundColor: [
+                  '#f59e42', '#6366f1', '#14b8a6', '#f43f5e', '#0ea5e9'
+                ]
+              }]
+            },
+            options: {
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' } }
+              }
+            }
+          });
+        }
+      });
+    </script>
+    <style>
+      /* Custom scrollbar for better UI */
+      ::-webkit-scrollbar { width: 8px; background: #f3f4f6; }
+      ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 8px; }
+      .sidebar-link.active, .sidebar-link.bg-blue-900 { box-shadow: 0 2px 8px 0 #c7d2fe33; }
+      .main-page { animation: fadeIn 0.4s; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: none; } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen transition-colors">
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-72 min-w-[16rem] bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 shadow-2xl flex flex-col transition-all border-r border-blue-100 z-20 font-sans">
+        <div class="flex items-center gap-2 px-8 py-8">
+            <span class="text-3xl md:text-4xl font-black text-blue-900 drop-shadow-lg tracking-tight select-none">BioDash</span>
+            <span class="ml-2 px-2 py-1 rounded-lg bg-blue-900 text-white text-xs font-bold shadow-md tracking-wider">v2.0</span>
+        </div>
+        <nav class="flex-1">
+            <ul class="space-y-2 px-4">
+                <li>
+                    <a id="link-dashboard" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('dashboard')">
+                        <span class="material-icons group-hover:text-blue-700 transition">dashboard</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a id="link-attendance" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('attendance')">
+                        <span class="material-icons group-hover:text-blue-700 transition">fingerprint</span>
+                        <span>Attendance</span>
+                    </a>
+                </li>
+                <li>
+                    <a id="link-reports" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('reports')">
+                        <span class="material-icons group-hover:text-blue-700 transition">bar_chart</span>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li>
+                    <a id="link-crypto" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('crypto')">
+                        <span class="material-icons group-hover:text-blue-700 transition">account_balance_wallet</span>
+                        <span>Crypto</span>
+                    </a>
+                </li>
+                <li>
+                    <a id="link-users" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('users')">
+                        <span class="material-icons group-hover:text-blue-700 transition">people</span>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li>
+                    <a id="link-devices" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('devices')">
+                        <span class="material-icons group-hover:text-blue-700 transition">devices</span>
+                        <span>Devices</span>
+                    </a>
+                </li>
+                <li>
+                    <a id="link-settings" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('settings')">
+                        <span class="material-icons group-hover:text-blue-700 transition">settings</span>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a id="link-help" class="sidebar-link flex items-center gap-3 px-5 py-3 rounded-xl cursor-pointer transition-all duration-150 hover:bg-blue-200/60 hover:text-blue-900 hover:shadow-lg text-base font-medium text-blue-700 group" onclick="openPage('help')">
+                        <span class="material-icons group-hover:text-blue-700 transition">help_outline</span>
+                        <span>Help</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="px-8 py-6 text-xs text-blue-400 border-t border-blue-100 tracking-wide select-none">
+            &copy; 2024 <span class="font-bold text-blue-700">BioDash</span>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Navbar -->
+        <header class="flex items-center justify-between px-10 py-4 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100/80 shadow-lg sticky top-0 z-20 border-b border-blue-100/60 rounded-b-2xl backdrop-blur font-sans">
+            <!-- Left: Sidebar toggle & Welcome -->
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden mr-2 p-2 rounded-full hover:bg-blue-200/60 transition focus:outline-none focus:ring-2 focus:ring-blue-400" onclick="document.querySelector('aside').classList.toggle('hidden')" title="Toggle Sidebar" aria-label="Toggle Sidebar">
+                    <span class="material-icons text-2xl text-blue-700">menu</span>
+                </button>
+                <span class="text-xl font-bold text-blue-900 drop-shadow-sm hidden md:inline flex items-center gap-2">
+                    <span class="material-icons text-purple-600 text-2xl">person</span>
+                    Welcome, <span class="text-purple-600 font-semibold">Admin</span>
+                </span>
+            </div>
+            <!-- Center: Search bar (new) -->
+            <form class="hidden md:flex items-center bg-white/90 border border-blue-100 rounded-lg px-3 py-1 shadow focus-within:ring-2 focus-within:ring-blue-400 transition w-64">
+                <span class="material-icons text-blue-400 mr-2 text-lg">search</span>
+                <input type="text" placeholder="Quick search..." class="bg-transparent outline-none flex-1 text-blue-700 placeholder-blue-400 text-base" />
+            </form>
+            <!-- Right: Actions -->
+            <div class="flex items-center gap-3">
+                <button class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-400 text-white px-4 py-2 rounded-lg shadow-md hover:scale-105 hover:from-blue-600 hover:to-pink-500 transition font-semibold flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" onclick="openPage('attendance')">
+                    <span class="material-icons text-base">add_circle</span>
+                    <span>Add Attendance</span>
+                </button>
+                <button class="bg-white/90 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg shadow-md hover:bg-blue-100/60 hover:text-blue-900 transition font-semibold flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" onclick="openPage('reports')">
+                    <span class="material-icons text-base">download</span>
+                    <span>Export</span>
+                </button>
+                <button type="button" class="ml-1 p-2 rounded-full bg-white/90 border border-blue-100 hover:bg-blue-200/60 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400" onclick="toggleTheme(); return false;" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="material-icons text-blue-700 text-lg">brightness_6</span>
+                </button>
+                <!-- Profile dropdown (improved) -->
+                <div class="relative group ml-1">
+                    <button class="focus:outline-none" aria-label="User Menu">
+                        <img src="https://i.pravatar.cc/100" class="w-10 h-10 rounded-full border-2 border-purple-200 shadow-lg ring-2 ring-blue-200" alt="User Avatar" />
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white border border-blue-100 rounded-xl shadow-lg py-2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition z-30">
+                        <a href="#" onclick="openPage('settings')" class="block px-5 py-2 text-blue-700 hover:bg-blue-50 transition flex items-center gap-2">
+                            <span class="material-icons text-blue-400 text-base">settings</span>
+                            Profile & Settings
+                        </a>
+                        <a href="#" onclick="openPage('help')" class="block px-5 py-2 text-blue-700 hover:bg-blue-50 transition flex items-center gap-2">
+                            <span class="material-icons text-blue-400 text-base">help_outline</span>
+                            Help Center
+                        </a>
+                        <div class="border-t border-blue-100 my-1"></div>
+                        <a href="/logout" class="block px-5 py-2 text-red-600 hover:bg-red-50 transition flex items-center gap-2">
+                            <span class="material-icons text-red-400 text-base">logout</span>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="flex-1 p-8 space-y-10">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="main-page">
+                <nav class="text-sm text-blue-400 mb-4">
+                    <ol class="list-reset flex">
+                        <li><a href="#" class="hover:underline text-blue-600">Home</a></li>
+                        <li><span class="mx-2">/</span></li>
+                        <li>Dashboard</li>
+                    </ol>
+                </nav>
+                <!-- KPI Cards -->
+                <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-400/90 via-purple-400/80 to-pink-400/80 rounded-2xl shadow-xl p-7 flex flex-col items-start gap-4 hover:scale-105 transition text-blue-900 border border-blue-100/60">
+                        <div class="bg-white/60 rounded-full p-4 shadow">
+                            <span class="material-icons text-4xl text-blue-500">check_circle</span>
+                        </div>
+                        <div>
+                            <h2 class="text-4xl font-extrabold tracking-tight">1,245</h2>
+                            <p class="text-blue-700/80">Total Scans</p>
+                        </div>
+                        <span class="text-xs text-green-600 font-semibold">+5% this week</span>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-400/90 via-blue-400/80 to-purple-400/80 rounded-2xl shadow-xl p-7 flex flex-col items-start gap-4 hover:scale-105 transition text-blue-900 border border-blue-100/60">
+                        <div class="bg-white/60 rounded-full p-4 shadow">
+                            <span class="material-icons text-4xl text-green-500">verified</span>
+                        </div>
+                        <div>
+                            <h2 class="text-4xl font-extrabold tracking-tight">98%</h2>
+                            <p class="text-blue-700/80">Success Rate</p>
+                        </div>
+                        <span class="text-xs text-green-600 font-semibold">Stable</span>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-400/90 via-pink-400/80 to-red-400/80 rounded-2xl shadow-xl p-7 flex flex-col items-start gap-4 hover:scale-105 transition text-blue-900 border border-blue-100/60">
+                        <div class="bg-white/60 rounded-full p-4 shadow">
+                            <span class="material-icons text-4xl text-yellow-500">warning</span>
+                        </div>
+                        <div>
+                            <h2 class="text-4xl font-extrabold tracking-tight">3</h2>
+                            <p class="text-blue-700/80">Critical Alerts</p>
+                        </div>
+                        <span class="text-xs text-red-600 font-semibold">-2 since yesterday</span>
+                    </div>
+                    <div class="bg-gradient-to-br from-indigo-400/90 via-blue-400/80 to-purple-400/80 rounded-2xl shadow-xl p-7 flex flex-col items-start gap-4 hover:scale-105 transition text-blue-900 border border-blue-100/60">
+                        <div class="bg-white/60 rounded-full p-4 shadow">
+                            <span class="material-icons text-4xl text-indigo-500">people</span>
+                        </div>
+                        <div>
+                            <h2 class="text-4xl font-extrabold tracking-tight">56</h2>
+                            <p class="text-blue-700/80">Active Users</p>
+                        </div>
+                        <span class="text-xs text-blue-600 font-semibold">+2 new users</span>
+                    </div>
+                </section>
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                    <!-- Attendance Trend Chart -->
+                    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-blue-100/60 md:col-span-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-blue-700">Attendance Trend</h3>
+                            <span class="text-xs text-blue-400">Last 7 days</span>
+                        </div>
+                        <canvas id="attendanceChart" height="120"></canvas>
+                        <div class="flex gap-4 mt-4">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block w-3 h-3 rounded-full bg-blue-400"></span>
+                                <span class="text-xs text-blue-700">Present</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block w-3 h-3 rounded-full bg-pink-400"></span>
+                                <span class="text-xs text-pink-700">Absent</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Device Status Chart & Quick Actions -->
+                    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-blue-100/60 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-blue-700 mb-4">Device Status</h3>
+                            <canvas id="deviceStatusChart" height="120"></canvas>
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="font-bold text-blue-700 mb-2">Quick Actions</h3>
+                            <div class="flex flex-col gap-2">
+                                <button class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-4 py-2 rounded-xl shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold flex items-center gap-2">
+                                    <span class="material-icons">person_add</span> Add User
+                                </button>
+                                <button class="bg-gradient-to-r from-green-400 to-blue-400 text-white px-4 py-2 rounded-xl shadow hover:from-green-500 hover:to-blue-500 transition font-semibold flex items-center gap-2">
+                                    <span class="material-icons">add_task</span> Add Attendance
+                                </button>
+                                <button class="bg-gradient-to-r from-yellow-400 to-pink-400 text-white px-4 py-2 rounded-xl shadow hover:from-yellow-500 hover:to-pink-500 transition font-semibold flex items-center gap-2">
+                                    <span class="material-icons">add_alert</span> Add Alert
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- More Charts Row -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                    <!-- Monthly Attendance Chart -->
+                    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-blue-100/60">
+                        <h3 class="font-bold text-blue-700 mb-4">Monthly Attendance</h3>
+                        <canvas id="monthlyAttendanceChart" height="120"></canvas>
+                        <div class="flex justify-between text-xs text-blue-400 mt-2">
+                            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                        </div>
+                    </div>
+                    <!-- User Roles Pie Chart -->
+                    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-blue-100/60">
+                        <h3 class="font-bold text-blue-700 mb-4">User Roles</h3>
+                        <canvas id="userRolesChart" height="120"></canvas>
+                        <div class="flex justify-between text-xs text-blue-400 mt-2">
+                            <span>Admin</span><span>User</span>
+                        </div>
+                    </div>
+                    <!-- Alerts Bar Chart -->
+                    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-blue-100/60">
+                        <h3 class="font-bold text-blue-700 mb-4">Alerts Overview</h3>
+                        <canvas id="alertsChart" height="120"></canvas>
+                        <div class="flex justify-between text-xs text-blue-400 mt-2">
+                            <span>Info</span><span>Warning</span><span>Critical</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Lists and Tables Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- Recent Activity Table -->
+                    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-blue-100/60 overflow-x-auto">
+                        <h3 class="font-bold text-blue-700 mb-2">Recent Attendance Activity</h3>
+                        <table class="min-w-full bg-white/90 rounded-2xl shadow border border-blue-100/60">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">User</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Device</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Location</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-blue-100">
+                                <tr>
+                                    <td class="px-4 py-3 flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/40?img=1" class="w-8 h-8 rounded-full" />
+                                        Jane Doe
+                                    </td>
+                                    <td class="px-4 py-3">09:15 AM</td>
+                                    <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Success</span></td>
+                                    <td class="px-4 py-3">Terminal 1</td>
+                                    <td class="px-4 py-3">HQ - Main</td>
+                                    <td class="px-4 py-3"><button class="text-blue-600 hover:underline text-xs font-semibold">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/40?img=2" class="w-8 h-8 rounded-full" />
+                                        John Smith
+                                    </td>
+                                    <td class="px-4 py-3">09:18 AM</td>
+                                    <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">Pending</span></td>
+                                    <td class="px-4 py-3">Terminal 2</td>
+                                    <td class="px-4 py-3">Branch A</td>
+                                    <td class="px-4 py-3"><button class="text-blue-600 hover:underline text-xs font-semibold">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/40?img=3" class="w-8 h-8 rounded-full" />
+                                        Mary Lee
+                                    </td>
+                                    <td class="px-4 py-3">09:22 AM</td>
+                                    <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">Failed</span></td>
+                                    <td class="px-4 py-3">Terminal 3</td>
+                                    <td class="px-4 py-3">HQ - Side</td>
+                                    <td class="px-4 py-3"><button class="text-blue-600 hover:underline text-xs font-semibold">Details</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Top Devices List -->
+                    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-blue-100/60">
+                        <h3 class="font-bold text-blue-700 mb-2">Top Devices</h3>
+                        <ul class="divide-y divide-blue-100">
+                            <li class="flex items-center py-3">
+                                <span class="material-icons text-blue-400 mr-3">devices</span>
+                                <div>
+                                    <div class="font-semibold text-blue-700">Terminal 1</div>
+                                    <div class="text-xs text-blue-400">HQ - Main</div>
+                                </div>
+                                <span class="ml-auto inline-block px-3 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Online</span>
+                            </li>
+                            <li class="flex items-center py-3">
+                                <span class="material-icons text-purple-400 mr-3">devices</span>
+                                <div>
+                                    <div class="font-semibold text-blue-700">Terminal 2</div>
+                                    <div class="text-xs text-blue-400">Branch A</div>
+                                </div>
+                                <span class="ml-auto inline-block px-3 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">Offline</span>
+                            </li>
+                            <li class="flex items-center py-3">
+                                <span class="material-icons text-yellow-400 mr-3">devices</span>
+                                <div>
+                                    <div class="font-semibold text-blue-700">Terminal 3</div>
+                                    <div class="text-xs text-blue-400">HQ - Side</div>
+                                </div>
+                                <span class="ml-auto inline-block px-3 py-1 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">Maintenance</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Notice & Progress Bar -->
+                <div class="flex flex-col md:flex-row gap-8 mb-8">
+                    <!-- Notice -->
+                    <div class="flex-1 flex items-center bg-gradient-to-r from-yellow-100 via-pink-100 to-purple-100 border-l-4 border-yellow-400 p-4 rounded shadow">
+                        <span class="material-icons text-yellow-600 mr-3">info</span>
+                        <div>
+                            <span class="font-bold">Notice:</span> 1 device requires firmware update. <a href="#" class="text-blue-600 underline">See details</a>
+                        </div>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="flex-1">
+                        <label class="block font-semibold mb-2 text-blue-700">Daily Attendance Progress</label>
+                        <div class="w-full bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 rounded-full h-3 mb-1">
+                            <div class="bg-gradient-to-r from-blue-400 to-purple-400 h-3 rounded-full transition-all" style="width: 82%"></div>
+                        </div>
+                        <div class="text-right text-xs text-blue-400">82% Complete</div>
+                    </div>
+                </div>
+                <!-- FAQ & Announcements -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- FAQ -->
+                    <div class="rounded-2xl shadow bg-white/90 border border-blue-100/60">
+                        <details class="group">
+                            <summary class="cursor-pointer px-6 py-4 font-semibold group-open:bg-blue-50 rounded-t-lg">How does biometric integration work?</summary>
+                            <div class="px-6 py-4 border-t border-gray-100">
+                                Biometric integration connects your devices to the attendance system for real-time tracking and seamless management.
+                            </div>
+                        </details>
+                        <details class="group">
+                            <summary class="cursor-pointer px-6 py-4 font-semibold group-open:bg-blue-50">How do I add a new device?</summary>
+                            <div class="px-6 py-4 border-t border-gray-100">
+                                Go to <b>Devices</b> and click <b>Add Device</b>. Fill in the details and submit.
+                            </div>
+                        </details>
+                    </div>
+                    <!-- Announcements -->
+                    <div class="rounded-2xl shadow bg-white/90 border border-blue-100/60 p-6">
+                        <h3 class="font-bold text-blue-700 mb-4">Announcements</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <span class="material-icons text-green-400">campaign</span>
+                                <div>
+                                    <div class="font-semibold">System maintenance scheduled for June 10th.</div>
+                                    <div class="text-xs text-blue-400">2 hours ago</div>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="material-icons text-blue-400">campaign</span>
+                                <div>
+                                    <div class="font-semibold">New biometric device firmware released.</div>
+                                    <div class="text-xs text-blue-400">Yesterday</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <footer class="text-center p-4 text-blue-400 text-xs mt-10">
+                    &copy; 2024 BioDash. All rights reserved.
+                </footer>
+                <!-- Extra Dashboard Charts -->
+                <script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                    // Monthly Attendance Chart
+                    if (document.getElementById('monthlyAttendanceChart')) {
+                      new Chart(document.getElementById('monthlyAttendanceChart'), {
+                        type: 'bar',
+                        data: {
+                          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                          datasets: [{
+                            label: 'Attendance %',
+                            data: [95, 97, 98, 96, 99, 98],
+                            backgroundColor: '#6366f1',
+                            borderRadius: 8,
+                          }]
+                        },
+                        options: {
+                          plugins: { legend: { display: false } },
+                          scales: {
+                            x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, min: 90, max: 100 }
+                          }
+                        }
+                      });
+                    }
+                    // User Roles Pie Chart
+                    if (document.getElementById('userRolesChart')) {
+                      new Chart(document.getElementById('userRolesChart'), {
+                        type: 'pie',
+                        data: {
+                          labels: ['Admin', 'User'],
+                          datasets: [{
+                            data: [8, 48],
+                            backgroundColor: ['#6366f1', '#0ea5e9'],
+                          }]
+                        },
+                        options: {
+                          plugins: { legend: { display: true, position: 'bottom' } }
+                        }
+                      });
+                    }
+                    // Alerts Bar Chart
+                    if (document.getElementById('alertsChart')) {
+                      new Chart(document.getElementById('alertsChart'), {
+                        type: 'bar',
+                        data: {
+                          labels: ['Info', 'Warning', 'Critical'],
+                          datasets: [{
+                            label: 'Alerts',
+                            data: [12, 5, 3],
+                            backgroundColor: ['#0ea5e9', '#fbbf24', '#f43f5e'],
+                            borderRadius: 8,
+                          }]
+                        },
+                        options: {
+                          plugins: { legend: { display: false } },
+                          scales: {
+                            x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
+                          }
+                        }
+                      });
+                    }
+                  });
+                </script>
+            </div>
+            <!-- Attendance Page -->
+            <div id="attendance" class="main-page hidden">
+                <h2 class="text-3xl font-extrabold mb-6 text-blue-700">Attendance Records</h2>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                    <form class="flex gap-2 flex-1 max-w-md">
+                        <input type="text" placeholder="Search by user..." class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <input type="date" class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-4 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">
+                            <span class="material-icons text-base">search</span>
+                        </button>
+                    </form>
+                    <button class="bg-gradient-to-r from-green-400 to-blue-400 text-white px-6 py-2 rounded shadow hover:from-green-500 hover:to-blue-500 transition font-semibold flex items-center gap-2">
+                        <span class="material-icons">add_task</span> Add Attendance
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white/90 rounded-2xl shadow border border-blue-100/60">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">User</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Check In</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Check Out</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Status</th>
+                                <th class="px-4 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-blue-100">
+                            <tr>
+                                <td class="px-4 py-3 flex items-center gap-2">
+                                    <img src="https://i.pravatar.cc/40?img=1" class="w-8 h-8 rounded-full" />
+                                    Jane Doe
+                                </td>
+                                <td class="px-4 py-3">2024-06-01</td>
+                                <td class="px-4 py-3">09:00 AM</td>
+                                <td class="px-4 py-3">05:00 PM</td>
+                                <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Present</span></td>
+                                <td class="px-4 py-3"><button class="text-blue-600 hover:underline text-xs font-semibold">Details</button></td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 flex items-center gap-2">
+                                    <img src="https://i.pravatar.cc/40?img=2" class="w-8 h-8 rounded-full" />
+                                    John Smith
+                                </td>
+                                <td class="px-4 py-3">2024-06-01</td>
+                                <td class="px-4 py-3">09:10 AM</td>
+                                <td class="px-4 py-3">05:05 PM</td>
+                                <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">Late</span></td>
+                                <td class="px-4 py-3"><button class="text-blue-600 hover:underline text-xs font-semibold">Details</button></td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 flex items-center gap-2">
+                                    <img src="https://i.pravatar.cc/40?img=3" class="w-8 h-8 rounded-full" />
+                                    Mary Lee
+                                </td>
+                                <td class="px-4 py-3">2024-06-01</td>
+                                <td class="px-4 py-3">09:20 AM</td>
+                                <td class="px-4 py-3">05:10 PM</td>
+                                <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">Absent</span></td>
+                                <td class="px-4 py-3"><button class="text-blue-600 hover:underline text-xs font-semibold">Details</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-10 max-w-lg">
+                    <h3 class="font-semibold mb-3 text-blue-700">Add Attendance</h3>
+                    <form class="flex flex-wrap gap-4">
+                        <input type="text" placeholder="Full Name" class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <input type="date" class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <input type="time" class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <input type="time" class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <select class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60">
+                            <option>Present</option>
+                            <option>Late</option>
+                            <option>Absent</option>
+                        </select>
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-6 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">Add</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Reports Page -->
+            <div id="reports" class="main-page hidden">
+                <h2 class="text-3xl font-extrabold mb-6 text-blue-700">Reports</h2>
+                <!-- Attendance Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-400/90 via-purple-400/80 to-pink-400/80 rounded-2xl shadow-xl p-6 flex flex-col items-start gap-2 border border-blue-100/60">
+                        <span class="material-icons text-3xl text-blue-500 mb-2">insights</span>
+                        <span class="text-4xl font-bold text-blue-700">98%</span>
+                        <span class="text-blue-400">Attendance Rate</span>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-400/90 via-blue-400/80 to-purple-400/80 rounded-2xl shadow-xl p-6 flex flex-col items-start gap-2 border border-blue-100/60">
+                        <span class="material-icons text-3xl text-green-500 mb-2">person_off</span>
+                        <span class="text-4xl font-bold text-green-700">5</span>
+                        <span class="text-blue-400">Absentees</span>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-400/90 via-pink-400/80 to-red-400/80 rounded-2xl shadow-xl p-6 flex flex-col items-start gap-2 border border-blue-100/60">
+                        <span class="material-icons text-3xl text-yellow-500 mb-2">schedule</span>
+                        <span class="text-4xl font-bold text-yellow-700">2</span>
+                        <span class="text-blue-400">Late</span>
+                    </div>
+                </div>
+                <!-- Monthly Attendance Chart -->
+                <div class="bg-white/90 rounded-2xl shadow p-8 border border-blue-100/60 mb-8">
+                    <h3 class="font-semibold mb-4 text-blue-700">Monthly Attendance Chart</h3>
+                    <canvas id="monthlyAttendanceChart" height="120"></canvas>
+                    <div class="flex justify-between text-xs text-blue-400 mt-2">
+                        <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                    </div>
+                </div>
+                <!-- Download Reports -->
+                <div class="bg-gradient-to-r from-blue-100/80 via-purple-100/80 to-pink-100/80 rounded-2xl shadow p-8 border border-blue-100/60">
+                    <h3 class="font-semibold mb-3 text-blue-700">Export Reports</h3>
+                    <form class="flex flex-wrap gap-4 items-end">
+                        <div>
+                            <label class="block text-xs font-semibold text-blue-700 mb-1">From</label>
+                            <input type="date" class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-blue-700 mb-1">To</label>
+                            <input type="date" class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-blue-700 mb-1">Format</label>
+                            <select class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60">
+                                <option>CSV</option>
+                                <option>Excel</option>
+                                <option>PDF</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-6 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">Download</button>
+                    </form>
+                </div>
+                <!-- Chart.js Script for Monthly Attendance -->
+                <script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                    if (document.getElementById('monthlyAttendanceChart')) {
+                      new Chart(document.getElementById('monthlyAttendanceChart'), {
+                        type: 'bar',
+                        data: {
+                          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                          datasets: [{
+                            label: 'Attendance %',
+                            data: [95, 97, 98, 96, 99, 98],
+                            backgroundColor: '#6366f1',
+                            borderRadius: 8,
+                          }]
+                        },
+                        options: {
+                          plugins: { legend: { display: false } },
+                          scales: {
+                            x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, min: 90, max: 100 }
+                          }
+                        }
+                      });
+                    }
+                  });
+                </script>
+            </div>
+            <!-- Crypto Page -->
+            <div id="crypto" class="main-page hidden">
+                <h2 class="text-3xl font-extrabold mb-6 text-blue-700">Crypto Wallets</h2>
+                <!-- Crypto List -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-yellow-400/90 via-orange-400/80 to-pink-400/80 rounded-2xl shadow-xl p-6 flex items-center gap-4 border border-blue-100/60">
+                        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" class="w-12 h-12 rounded-full bg-white p-2" alt="BTC" />
+                        <div>
+                            <h3 class="font-bold text-lg">Bitcoin (BTC)</h3>
+                            <p class="text-blue-700/80">Balance: 0.245 BTC</p>
+                        </div>
+                        <span class="ml-auto inline-block px-3 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">+2.5%</span>
+                    </div>
+                    <div class="bg-gradient-to-br from-indigo-400/90 via-blue-400/80 to-purple-400/80 rounded-2xl shadow-xl p-6 flex items-center gap-4 border border-blue-100/60">
+                        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-12 h-12 rounded-full bg-white p-2" alt="ETH" />
+                        <div>
+                            <h3 class="font-bold text-lg">Ethereum (ETH)</h3>
+                            <p class="text-blue-700/80">Balance: 1.2 ETH</p>
+                        </div>
+                        <span class="ml-auto inline-block px-3 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">+1.1%</span>
+                    </div>
+                    <div class="bg-gradient-to-br from-teal-400/90 via-blue-400/80 to-purple-400/80 rounded-2xl shadow-xl p-6 flex items-center gap-4 border border-blue-100/60">
+                        <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-12 h-12 rounded-full bg-white p-2" alt="SOL" />
+                        <div>
+                            <h3 class="font-bold text-lg">Solana (SOL)</h3>
+                            <p class="text-blue-700/80">Balance: 30 SOL</p>
+                        </div>
+                        <span class="ml-auto inline-block px-3 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">-0.8%</span>
+                    </div>
+                </div>
+                <!-- Crypto Chart -->
+                <div class="bg-white/90 rounded-2xl shadow p-8 border border-blue-100/60 mb-8">
+                    <h2 class="text-lg font-bold mb-4 text-blue-700">Crypto Portfolio Chart</h2>
+                    <canvas id="cryptoChart" height="120"></canvas>
+                    <div class="flex justify-between text-xs text-blue-400 mt-2">
+                        <span>BTC</span><span>ETH</span><span>SOL</span><span>ADA</span><span>XRP</span>
+                    </div>
+                </div>
+                <!-- Crypto Table -->
+                <div class="bg-white/90 rounded-2xl shadow p-8 border border-blue-100/60">
+                    <h2 class="text-lg font-bold mb-4 text-blue-700">Transaction History</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-2xl border border-blue-100/60">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Date</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Crypto</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Type</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Amount</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-blue-100">
+                                <tr>
+                                    <td class="px-4 py-3">2024-06-01</td>
+                                    <td class="px-4 py-3 flex items-center gap-2">
+                                        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" class="w-6 h-6 rounded-full bg-white p-1" alt="BTC" />
+                                        BTC
+                                    </td>
+                                    <td class="px-4 py-3">Deposit</td>
+                                    <td class="px-4 py-3">+0.100</td>
+                                    <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">2024-05-28</td>
+                                    <td class="px-4 py-3 flex items-center gap-2">
+                                        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-6 h-6 rounded-full bg-white p-1" alt="ETH" />
+                                        ETH
+                                    </td>
+                                    <td class="px-4 py-3">Withdraw</td>
+                                    <td class="px-4 py-3">-0.500</td>
+                                    <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">2024-05-25</td>
+                                    <td class="px-4 py-3 flex items-center gap-2">
+                                        <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-6 h-6 rounded-full bg-white p-1" alt="SOL" />
+                                        SOL
+                                    </td>
+                                    <td class="px-4 py-3">Deposit</td>
+                                    <td class="px-4 py-3">+10</td>
+                                    <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">2024-05-20</td>
+                                    <td class="px-4 py-3 flex items-center gap-2">
+                                        <img src="https://cryptologos.cc/logos/cardano-ada-logo.png" class="w-6 h-6 rounded-full bg-white p-1" alt="ADA" />
+                                        ADA
+                                    </td>
+                                    <td class="px-4 py-3">Withdraw</td>
+                                    <td class="px-4 py-3">-50</td>
+                                    <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">Failed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Users Page -->
+            <div id="users" class="main-page hidden">
+                <h2 class="text-3xl font-extrabold mb-6 text-blue-700">Users</h2>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                    <form class="flex gap-2 flex-1 max-w-md">
+                        <input type="text" placeholder="Search users..." class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-4 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">
+                            <span class="material-icons text-base">search</span>
+                        </button>
+                    </form>
+                    <button class="bg-gradient-to-r from-green-400 to-blue-400 text-white px-6 py-2 rounded shadow hover:from-green-500 hover:to-blue-500 transition font-semibold flex items-center gap-2">
+                        <span class="material-icons">person_add</span> Add User
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white/90 rounded-2xl shadow border border-blue-100/60">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Avatar</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Email</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Role</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-700 uppercase">Status</th>
+                                <th class="px-4 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-blue-100">
+                            <tr>
+                                <td class="px-4 py-3"><img src="https://i.pravatar.cc/40?img=4" class="w-8 h-8 rounded-full" /></td>
+                                <td class="px-4 py-3 font-semibold">Alice Brown</td>
+                                <td class="px-4 py-3">alice@email.com</td>
+                                <td class="px-4 py-3">Admin</td>
+                                <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Active</span></td>
+                                <td class="px-4 py-3 flex gap-2">
+                                    <button class="text-blue-600 hover:underline text-xs font-semibold flex items-center gap-1">
+                                        <span class="material-icons text-base">edit</span> Edit
+                                    </button>
+                                    <button class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1">
+                                        <span class="material-icons text-base">delete</span> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3"><img src="https://i.pravatar.cc/40?img=5" class="w-8 h-8 rounded-full" /></td>
+                                <td class="px-4 py-3 font-semibold">Bob Lee</td>
+                                <td class="px-4 py-3">bob@email.com</td>
+                                <td class="px-4 py-3">User</td>
+                                <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">Pending</span></td>
+                                <td class="px-4 py-3 flex gap-2">
+                                    <button class="text-blue-600 hover:underline text-xs font-semibold flex items-center gap-1">
+                                        <span class="material-icons text-base">edit</span> Edit
+                                    </button>
+                                    <button class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1">
+                                        <span class="material-icons text-base">delete</span> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3"><img src="https://i.pravatar.cc/40?img=6" class="w-8 h-8 rounded-full" /></td>
+                                <td class="px-4 py-3 font-semibold">Carol White</td>
+                                <td class="px-4 py-3">carol@email.com</td>
+                                <td class="px-4 py-3">User</td>
+                                <td class="px-4 py-3"><span class="inline-block px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Active</span></td>
+                                <td class="px-4 py-3 flex gap-2">
+                                    <button class="text-blue-600 hover:underline text-xs font-semibold flex items-center gap-1">
+                                        <span class="material-icons text-base">edit</span> Edit
+                                    </button>
+                                    <button class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1">
+                                        <span class="material-icons text-base">delete</span> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-10 max-w-lg">
+                    <h3 class="font-semibold mb-3 text-blue-700">Add New User</h3>
+                    <form class="flex flex-wrap gap-4">
+                        <input type="text" placeholder="Full Name" class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <input type="email" placeholder="Email" class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <select class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60">
+                            <option>User</option>
+                            <option>Admin</option>
+                        </select>
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-6 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">Add User</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Devices Page -->
+            <div id="devices" class="main-page hidden">
+                <h2 class="text-3xl font-extrabold mb-6 text-blue-700">Devices</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Device Card 1 -->
+                    <div class="bg-white/90 rounded-2xl shadow p-8 flex items-center gap-6 border border-blue-100/60">
+                        <span class="material-icons text-5xl text-blue-400">devices</span>
+                        <div>
+                            <h3 class="font-bold text-lg">Terminal 1</h3>
+                            <p class="text-blue-400">Online</p>
+                            <div class="text-xs text-blue-500 mt-1">Location: HQ - Main</div>
+                            <div class="text-xs text-gray-400">Last Sync: 09:10 AM</div>
+                        </div>
+                        <span class="ml-auto inline-block px-3 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Active</span>
+                    </div>
+                    <!-- Device Card 2 -->
+                    <div class="bg-white/90 rounded-2xl shadow p-8 flex items-center gap-6 border border-blue-100/60">
+                        <span class="material-icons text-5xl text-purple-400">devices</span>
+                        <div>
+                            <h3 class="font-bold text-lg">Terminal 2</h3>
+                            <p class="text-blue-400">Offline</p>
+                            <div class="text-xs text-blue-500 mt-1">Location: Branch A</div>
+                            <div class="text-xs text-gray-400">Last Sync: 08:55 AM</div>
+                        </div>
+                        <span class="ml-auto inline-block px-3 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">Offline</span>
+                    </div>
+                    <!-- Device Card 3 -->
+                    <div class="bg-white/90 rounded-2xl shadow p-8 flex items-center gap-6 border border-blue-100/60">
+                        <span class="material-icons text-5xl text-yellow-400">devices</span>
+                        <div>
+                            <h3 class="font-bold text-lg">Terminal 3</h3>
+                            <p class="text-blue-400">Maintenance</p>
+                            <div class="text-xs text-blue-500 mt-1">Location: HQ - Side</div>
+                            <div class="text-xs text-gray-400">Last Sync: 07:40 AM</div>
+                        </div>
+                        <span class="ml-auto inline-block px-3 py-1 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">Maintenance</span>
+                    </div>
+                    <!-- Device Card 4 -->
+                    <div class="bg-white/90 rounded-2xl shadow p-8 flex items-center gap-6 border border-blue-100/60">
+                        <span class="material-icons text-5xl text-green-400">devices</span>
+                        <div>
+                            <h3 class="font-bold text-lg">Terminal 4</h3>
+                            <p class="text-blue-400">Online</p>
+                            <div class="text-xs text-blue-500 mt-1">Location: Branch B</div>
+                            <div class="text-xs text-gray-400">Last Sync: 09:05 AM</div>
+                        </div>
+                        <span class="ml-auto inline-block px-3 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Active</span>
+                    </div>
+                </div>
+                <div class="mt-10">
+                    <h3 class="font-semibold mb-3 text-blue-700">Add New Device</h3>
+                    <form class="flex flex-wrap gap-4">
+                        <input type="text" placeholder="Device Name" class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <input type="text" placeholder="Location" class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        <select class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60">
+                            <option>Online</option>
+                            <option>Offline</option>
+                            <option>Maintenance</option>
+                        </select>
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-6 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">Add Device</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Settings Page -->
+            <div id="settings" class="main-page hidden">
+                <h2 class="text-3xl font-extrabold mb-6 text-blue-700">Settings</h2>
+                <div class="bg-white/90 rounded-2xl shadow p-8 border border-blue-100/60 max-w-xl mx-auto">
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block font-semibold mb-1 text-blue-700">Profile</label>
+                            <div class="flex items-center gap-4">
+                                <img src="https://i.pravatar.cc/80" class="w-16 h-16 rounded-full border-2 border-blue-200 shadow" />
+                                <div>
+                                    <input type="text" placeholder="Full Name" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60 mb-2" />
+                                    <input type="email" placeholder="Email Address" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-blue-700">Password</label>
+                            <input type="password" placeholder="New Password" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60 mb-2" />
+                            <input type="password" placeholder="Confirm Password" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" />
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-blue-700">Theme</label>
+                            <select class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" onchange="setTheme(this.value.toLowerCase())">
+                                <option value="light" selected>Light</option>
+                                <option value="dark" disabled>Dark</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-blue-700">Notifications</label>
+                            <div class="flex items-center gap-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 accent-blue-400" checked />
+                                    <span>Email Alerts</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 accent-blue-400" />
+                                    <span>Push Notifications</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-blue-700">Language</label>
+                            <select class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60">
+                                <option>English</option>
+                                <option disabled>Spanish</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-6 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Help Page -->
+            <div id="help" class="main-page hidden">
+                <h2 class="text-3xl font-extrabold mb-6 text-blue-700">Help & Support</h2>
+                <div class="bg-white/90 rounded-2xl shadow p-8 border border-blue-100/60">
+                    <h3 class="font-bold mb-4 text-blue-700">FAQs</h3>
+                    <div class="space-y-3">
+                        <details class="group">
+                            <summary class="cursor-pointer px-4 py-2 font-semibold group-open:bg-blue-50 rounded-lg">How do I add a new user?</summary>
+                            <div class="px-4 py-2 border-t border-gray-100">
+                                Go to <b>Users</b> and click <b>Add User</b> in Quick Actions. Fill in the details and submit.
+                            </div>
+                        </details>
+                        <details class="group">
+                            <summary class="cursor-pointer px-4 py-2 font-semibold group-open:bg-blue-50 rounded-lg">How can I export attendance data?</summary>
+                            <div class="px-4 py-2 border-t border-gray-100">
+                                Use the <b>Export</b> button in the top bar. Select your format and date range.
+                            </div>
+                        </details>
+                        <details class="group">
+                            <summary class="cursor-pointer px-4 py-2 font-semibold group-open:bg-blue-50 rounded-lg">What if a device is offline?</summary>
+                            <div class="px-4 py-2 border-t border-gray-100">
+                                Check power and network. If unresolved, contact IT or see the <a href="#" class="text-blue-600 underline">Device Guide</a>.
+                            </div>
+                        </details>
+                        <details class="group">
+                            <summary class="cursor-pointer px-4 py-2 font-semibold group-open:bg-blue-50 rounded-lg">How do I change my settings?</summary>
+                            <div class="px-4 py-2 border-t border-gray-100">
+                                Go to <b>Settings</b> in the sidebar, update info, and click <b>Save Changes</b>.
+                            </div>
+                        </details>
+                        <details class="group">
+                            <summary class="cursor-pointer px-4 py-2 font-semibold group-open:bg-blue-50 rounded-lg">Who do I contact for support?</summary>
+                            <div class="px-4 py-2 border-t border-gray-100">
+                                Email <a href="mailto:support@biodash.com" class="text-blue-600 underline">support@biodash.com</a> or use the form below.
+                            </div>
+                        </details>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-blue-100/80 via-purple-100/80 to-pink-100/80 rounded-2xl shadow p-8 border border-blue-100/60 mt-8">
+                    <h3 class="font-bold mb-4 text-blue-700">Contact Support</h3>
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block font-semibold mb-1 text-blue-700">Your Email</label>
+                            <input type="email" placeholder="you@email.com" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" required />
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-blue-700">Message</label>
+                            <textarea rows="4" placeholder="Describe your issue..." class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60" required></textarea>
+                        </div>
+                        <button type="submit" class="bg-gradient-to-r from-blue-400 to-purple-400 text-white px-6 py-2 rounded shadow hover:from-blue-500 hover:to-purple-500 transition font-semibold">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
