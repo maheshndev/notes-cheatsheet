@@ -1,4 +1,5 @@
-``` frappe.pages['mold-availability-dash'].on_page_load = async function (wrapper) {
+```
+frappe.pages['mold-availability-dash'].on_page_load = async function (wrapper) {
     const page = frappe.ui.make_app_page({
         parent: wrapper,
         title: 'Mold Availability Dashboard',
@@ -267,4 +268,5 @@ maintenance_table.find('.schedule-btn').on('click', function () {
     // Optionally, add a "Refresh" button
     page.add_inner_button('Refresh Table', refresh_table);
 
-};````
+};
+````
